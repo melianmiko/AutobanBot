@@ -1,8 +1,8 @@
 import os
 
 import telegram.error
-from telegram import Update, Message
-from telegram.constants import ChatType
+from telegram import Update, Message, ChatMember
+from telegram.constants import ChatType, ChatMemberStatus
 from telegram.ext import Application, CommandHandler, ContextTypes, ChatMemberHandler, MessageHandler, filters
 
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
@@ -41,17 +41,23 @@ async def on_member_change(update: Update, _: ContextTypes.DEFAULT_TYPE):
     if update.effective_chat.id not in ALLOWED_GROUPS:
         await update.effective_message.reply_text(f"I don't want to work in this chat, ID={update.effective_chat.id}")
         return
-    if update.effective_user.is_bot or not update.chat_member.new_chat_member:
+
+    # Filter requests
+    status = update.chat_member.difference().get("status")
+    is_bot = update.effective_user.is_bot
+    if is_bot or status is None or status[0] != ChatMemberStatus.LEFT or status[1] != ChatMember.MEMBER:
         return
 
+    # Info message drop
     chat_id = update.effective_chat.id
     if chat_id in sent_info_messages:
         try:
             await sent_info_messages[chat_id].delete()
         except telegram.error.BadRequest:
             pass
-    sent_info_messages[chat_id] = await update.effective_chat.send_message(INFO_MESSAGE)
+    sent_info_messages[chat_id] = await update.effective_chat.send_message(INFO_MESSAGE, disable_notification=True)
 
+    # Ban
     print("Ban", update.effective_user.id, "from", update.effective_chat.id)
     await update.effective_chat.unban_member(update.effective_user.id)
 
