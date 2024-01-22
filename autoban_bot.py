@@ -34,14 +34,14 @@ async def on_start_command(update: Update, _: ContextTypes.DEFAULT_TYPE):
     await update.effective_message.reply_text(START_MESSAGE)
 
 
-async def on_member_message(update: Update, _: ContextTypes.DEFAULT_TYPE):
+async def on_member_change(update: Update, _: ContextTypes.DEFAULT_TYPE):
     """
     Kick user when they join a chat.
     """
     if update.effective_chat.id not in ALLOWED_GROUPS:
         await update.effective_message.reply_text(f"I don't want to work in this chat, ID={update.effective_chat.id}")
         return
-    if update.effective_user.is_bot:
+    if update.effective_user.is_bot or not update.chat_member.new_chat_member:
         return
 
     chat_id = update.effective_chat.id
@@ -69,7 +69,7 @@ def main():
 
     app.add_handler(CommandHandler("start", on_start_command))
     app.add_handler(MessageHandler(filters=filters.ALL, callback=on_message))
-    app.add_handler(ChatMemberHandler(on_member_message, ChatMemberHandler.CHAT_MEMBER))
+    app.add_handler(ChatMemberHandler(on_member_change, ChatMemberHandler.CHAT_MEMBER))
 
     app.run_polling(allowed_updates=Update.ALL_TYPES)
 
