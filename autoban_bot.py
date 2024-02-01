@@ -8,11 +8,7 @@ from telegram.ext import Application, CommandHandler, ContextTypes, ChatMemberHa
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
 ALLOWED_GROUPS = [int(x) for x in os.environ.get("ALLOWED_GROUPS").split(",")]
 
-START_MESSAGE = ("Задолбало админить Telegram-группу только ради рабочих "
-                 "комментов в канале? Хочешь просто рабочие комментарии, "
-                 "без группы как таковой? Это бот для тебя! Правда конкретно "
-                 "этот откажется работать в незнакомой ему беседе, но ты можешь"
-                 "взять исходники и поднять свою его копию.")
+START_MESSAGE = ("Я не хочу разговаривать с вами.")
 INFO_MESSAGE = ("В эту группу нельзя вступить, она существует только для работы комментариев. "
                 "Если у вас есть вопросы, напишите их в комментариях под любым сообщением, "
                 "в личные сообщения админу, либо на почту support@mmk.pw.")
@@ -24,12 +20,7 @@ async def on_start_command(update: Update, _: ContextTypes.DEFAULT_TYPE):
     """
     Handle /start command
     """
-    print(update.effective_chat)
     if update.effective_chat.type in [ChatType.GROUP, ChatType.SUPERGROUP]:
-        if update.effective_chat.id not in ALLOWED_GROUPS:
-            await update.effective_message.reply_text(f"I don't want to work in this chat, ID={update.effective_chat.id}")
-        else:
-            await update.effective_message.reply_text("Let's go. Don't forgot to ban everyone except admins.")
         return
     await update.effective_message.reply_text(START_MESSAGE)
 
