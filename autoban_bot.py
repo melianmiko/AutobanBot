@@ -30,7 +30,7 @@ async def on_member_change(update: Update, _: ContextTypes.DEFAULT_TYPE):
     Kick user when they join a chat.
     """
     if update.effective_chat.id not in ALLOWED_GROUPS:
-        await update.effective_message.reply_text(f"I don't want to work in this chat, ID={update.effective_chat.id}")
+        await update.effective_chat.send_message(f"I don't want to work in this chat, ID={update.effective_chat.id}")
         return
 
     # Filter requests
