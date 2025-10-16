@@ -2,21 +2,20 @@ name: Build and install Docker container
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   release:
     runs-on: host
     steps:
       - uses: actions/checkout@v4
-      - name: Nginx image
+      - name: Docker image
         env:
           IMAGE_NAME: "${{ vars.FORGEJO_SERVER_HOST }}/owner/telegram-autoban"
         run: |
           set -e
           IMAGE_VERSION="0.1-`date '+%Y%m%d'`"
-          cd images/nginx
-          docker build -f Containerfile \
+          docker build \
             --progress=plain \
             -t "${{ env.IMAGE_NAME }}:$IMAGE_VERSION" \
             --build-arg APP_IMAGE_VERSION=$IMAGE_VERSION \
