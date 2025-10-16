@@ -1,8 +1,6 @@
-version: "3.9"
-
 services:
   bot:
-    image: registry.vpn/autoban_bot:latest
+    image: code.mmk.pw/owner/telegram-autoban:latest
     build: .
     restart: always
     env_file:
